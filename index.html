@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tournament - Match Results & Standings</title>
+    <meta name="description" content="Live football tournament standings and match results for Groups A and B">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚽ CHOLA SUPER LEAGUE</h1>
+            <p class="subtitle">Live Standings, Scores & Top Players</p>
+            <button onclick="location.reload()" class="btn"
+                style="margin-top: 10px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; cursor: pointer;">🔄
+                Refresh Standings</button>
+        </header>
+
+        <main>
+            <!-- Group Standings Section -->
+            <section class="groups-section">
+                <h2>Group Standings</h2>
+                <div class="groups-container">
+                    <!-- Group A -->
+                    <div class="group-card">
+                        <div class="group-header">
+                            <h3>Group A</h3>
+                        </div>
+                        <div class="standings-table">
+                            <div class="table-header">
+                                <span class="pos">#</span>
+                                <span class="team">Team</span>
+                                <span class="stat">P</span>
+                                <span class="stat">W</span>
+                                <span class="stat">D</span>
+                                <span class="stat">L</span>
+                                <span class="stat">GF</span>
+                                <span class="stat">GA</span>
+                                <span class="stat">GD</span>
+                                <span class="stat points-col">Pts</span>
+                            </div>
+                            <div id="groupAStandings" class="table-body">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group B -->
+                    <div class="group-card">
+                        <div class="group-header">
+                            <h3>Group B</h3>
+                        </div>
+                        <div class="standings-table">
+                            <div class="table-header">
+                                <span class="pos">#</span>
+                                <span class="team">Team</span>
+                                <span class="stat">P</span>
+                                <span class="stat">W</span>
+                                <span class="stat">D</span>
+                                <span class="stat">L</span>
+                                <span class="stat">GF</span>
+                                <span class="stat">GA</span>
+                                <span class="stat">GD</span>
+                                <span class="stat points-col">Pts</span>
+                            </div>
+                            <div id="groupBStandings" class="table-body">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Scorers Section -->
+            <section class="scorers-section" style="margin-bottom: 30px;">
+                <h2>🏆 Top Scorers</h2>
+                <div id="topScorersList" class="scorers-container"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Match Results Section -->
+            <section class="matches-section">
+                <h2>Match Results</h2>
+                <div id="matchResults" class="matches-container">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Tournament updates in real-time</p>
+        </footer>
+    </div>
+
+    <script src="app.js?v=2"></script>
+</body>
+
+</html>

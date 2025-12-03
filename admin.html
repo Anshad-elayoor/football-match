@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Match Management</title>
+    <meta name="description" content="Admin panel for managing football tournament match results">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚽ CHOLA SUPER LEAGUE</h1>
+            <p class="subtitle">Admin Panel - Manage Match Results & Scorers</p>
+            <div class="header-actions">
+                <a href="index.html" class="back-link">← Back to Results</a>
+                <button id="resetDataBtn" class="btn btn-warning"
+                    style="margin-left: 10px; background: #ff4444; color: white; border: none;">Reset All Data</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="controls-section">
+                <div class="info-card">
+                    <h3>📋 Instructions</h3>
+                    <ul>
+                        <li>Enter scores for each match using the input fields</li>
+                        <li>Click "Update Score" to save the result</li>
+                        <li>Manage Top Scorers in the section below</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Top Scorers Management -->
+            <section class="scorers-section" style="margin-bottom: 30px;">
+                <h2>🏆 Manage Top Scorers</h2>
+                <div class="scorer-form-card"
+                    style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="form-group" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa;">Player Name</label>
+                            <input type="text" id="playerName" list="playerNamesList" class="form-control"
+                                placeholder="e.g. Messi"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+                            <datalist id="playerNamesList">
+                                <!-- Populated by JS -->
+                            </datalist>
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa;">Team</label>
+                            <select id="playerTeam" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #1a1a2e; color: white;">
+                                <option value="Real Madrid">Real Madrid</option>
+                                <option value="PSG">PSG</option>
+                                <option value="Milan">Milan</option>
+                                <option value="Man. City">Man. City</option>
+                                <option value="Barcelona">Barcelona</option>
+                                <option value="Chelsea">Chelsea</option>
+                            </select>
+                        </div>
+                        <div style="width: 100px;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa;">Goals</label>
+                            <input type="number" id="playerGoals" class="form-control" placeholder="0" min="0"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+                        </div>
+                        <button id="addScorerBtn" class="btn btn-primary"
+                            style="padding: 10px 20px; background: linear-gradient(45deg, #00b09b, #96c93d); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold;">Add
+                            Player</button>
+                        <button id="updateScorerBtn" class="btn btn-primary"
+                            style="padding: 10px 20px; background: linear-gradient(45deg, #2196F3, #21CBF3); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; display: none;">Update
+                            Player</button>
+                        <button id="clearScorerBtn" class="btn btn-secondary"
+                            style="padding: 10px 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; cursor: pointer;">Clear</button>
+                    </div>
+                </div>
+                <div id="scorersList" class="scorers-list" style="margin-top: 20px; display: grid; gap: 10px;">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <section class="matches-section">
+                <h2>Match Fixtures</h2>
+                <div id="adminMatches" class="admin-matches-container">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© Football Tournament Admin System</p>
+        </footer>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>
