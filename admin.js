@@ -58,23 +58,30 @@ function updateMatchScore(id) {
 
     const homeInput = document.getElementById(`homeScore-${id}`);
     const awayInput = document.getElementById(`awayScore-${id}`);
+    const completedCheckbox = document.getElementById(`completed-${id}`);
 
     const homeScore = homeInput.value;
     const awayScore = awayInput.value;
+    const isCompleted = completedCheckbox.checked;
 
-    if (homeScore === '' || awayScore === '') {
-        alert('Please enter both scores');
+    // Allow saving with or without scores, but if scores are present, validate them
+    if (homeScore !== '' && awayScore !== '') {
+        currentMatches[matchIndex].homeScore = parseInt(homeScore);
+        currentMatches[matchIndex].awayScore = parseInt(awayScore);
+    } else if (homeScore === '' && awayScore === '') {
+        currentMatches[matchIndex].homeScore = null;
+        currentMatches[matchIndex].awayScore = null;
+    } else {
+        alert('Please enter both scores or leave both empty');
         return;
     }
 
-    // Update local state
-    currentMatches[matchIndex].homeScore = parseInt(homeScore);
-    currentMatches[matchIndex].awayScore = parseInt(awayScore);
-    currentMatches[matchIndex].completed = true;
+    // Respect the checkbox state
+    currentMatches[matchIndex].completed = isCompleted;
 
     // Save to Firebase
     db.ref('matches').set(currentMatches)
-        .then(() => showFeedback(id, 'Score Updated!'))
+        .then(() => showFeedback(id, 'Match Updated!'))
         .catch(error => alert('Error updating score: ' + error.message));
 }
 
@@ -133,9 +140,16 @@ function renderAdminMatches() {
                                    placeholder="0" min="0">
                         </div>
                     </div>
+                    <div class="completed-checkbox-container">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="completed-${match ? match.id : ''}" 
+                                   class="completed-checkbox" ${match && match.completed ? 'checked' : ''}>
+                            <span>Mark as Completed</span>
+                        </label>
+                    </div>
                     <div class="action-buttons">
                         <button onclick="updateMatchScore(${match ? match.id : ''})" class="btn btn-primary">
-                            Update Score
+                            Update Match
                         </button>
                     </div>
                 </div>
