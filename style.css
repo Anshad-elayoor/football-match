@@ -26,7 +26,7 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg-dark);
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 30%, hsla(220, 90%, 56%, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 70%, hsla(280, 80%, 60%, 0.1) 0%, transparent 50%);
     color: var(--text-primary);
@@ -319,6 +319,7 @@ footer {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -330,6 +331,7 @@ footer {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -363,11 +365,41 @@ footer {
         padding: 1rem 0.5rem;
     }
 
+    /* Make table scrollable horizontally */
+    .standings-table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+        /* Space for scrollbar */
+    }
+
     .table-header,
     .table-row {
-        grid-template-columns: 25px 1fr repeat(8, 35px);
-        font-size: 0.75rem;
+        /* Ensure minimum width to prevent squishing */
+        min-width: 500px;
+        grid-template-columns: 30px 1fr repeat(8, 40px);
+        font-size: 0.8rem;
         padding: 0.5rem 0.25rem;
+    }
+
+    /* Sticky position for Team Name so it stays visible while scrolling */
+    .table-header span:nth-child(2),
+    .table-row span:nth-child(2) {
+        position: sticky;
+        left: 30px;
+        /* Width of Pos column */
+        background: var(--bg-card);
+        /* Match background to cover scrolling content */
+        z-index: 1;
+    }
+
+    /* Sticky position for Rank */
+    .table-header span:nth-child(1),
+    .table-row span:nth-child(1) {
+        position: sticky;
+        left: 0;
+        background: var(--bg-card);
+        z-index: 2;
     }
 
     .team-score {
