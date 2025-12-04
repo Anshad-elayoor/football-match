@@ -134,10 +134,17 @@ function renderStandingsTable(groupName, elementId) {
     `).join('');
 }
 
+const TEAM_LOGOS = {
+    'Real Madrid': 'images/real_madrid.svg',
+    'PSG': 'images/psg.svg',
+    'Milan': 'images/milan.svg',
+    'Man. City': 'images/man_city.svg',
+    'Barcelona': 'images/barcelona.svg',
+    'Chelsea': 'images/chelsea.svg'
+};
+
 function getTeamLogo(teamName) {
-    // Generate a placeholder logo using UI Avatars
-    const encodedName = encodeURIComponent(teamName);
-    return `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff&size=64&rounded=true&bold=true`;
+    return TEAM_LOGOS[teamName] || `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=random&color=fff&size=64&rounded=true&bold=true`;
 }
 
 function renderMatchList() {
