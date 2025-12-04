@@ -8,10 +8,17 @@ let currentScorers = [];
 
 // 1. Initialization
 function initializeAdmin() {
+    console.log('Initializing Admin Panel...');
+
     // Listen for Matches
     db.ref('matches').on('value', (snapshot) => {
-        currentMatches = snapshot.val();
+        const val = snapshot.val();
+        console.log('Firebase matches update:', val);
+
+        currentMatches = val;
+
         if (!currentMatches) {
+            console.log('No matches found in Firebase. Seeding initial data...');
             // Seed initial data if empty
             const initialMatches = [
                 { id: 1, homeTeam: 'Real Madrid', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
@@ -24,14 +31,20 @@ function initializeAdmin() {
                 { id: 8, homeTeam: 'Milan', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
                 { id: 9, homeTeam: 'PSG', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false }
             ];
-            db.ref('matches').set(initialMatches);
+            db.ref('matches').set(initialMatches)
+                .then(() => console.log('Seeding complete.'))
+                .catch(e => console.error('Seeding failed:', e));
+
             currentMatches = initialMatches;
         }
+
+        console.log('Rendering matches with:', currentMatches);
         renderAdminMatches();
     });
 
     // Listen for Scorers
     db.ref('scorers').on('value', (snapshot) => {
+        console.log('Firebase scorers update:', snapshot.val());
         currentScorers = snapshot.val() || [];
         renderScorersList();
         populatePlayerAutocomplete();
@@ -82,40 +95,56 @@ function renderAdminMatches() {
     const container = document.getElementById('adminMatches');
     if (!container) return;
 
-    container.innerHTML = currentMatches.map(match => `
-        <div class="admin-match-card">
-            <div class="match-info">
-                <span class="match-title">Match ${match.id}</span>
-                <span class="match-status-badge ${match.completed ? 'completed' : 'pending'}">
-                    ${match.completed ? 'Completed' : 'Pending'}
-                </span>
-            </div>
-            <div class="match-form">
-                <div class="teams-input-container">
-                    <div class="team-input">
-                        <label class="team-label">${match.homeTeam}</label>
-                        <input type="number" id="homeScore-${match.id}" 
-                               class="score-input"
-                               value="${match.homeScore !== null ? match.homeScore : ''}" 
-                               placeholder="0" min="0">
+    if (!currentMatches) {
+        container.innerHTML = '<div style="color: white; text-align: center;">Loading matches...</div>';
+        return;
+    }
+
+    if (!Array.isArray(currentMatches) || currentMatches.length === 0) {
+        container.innerHTML = '<div style="color: white; text-align: center;">No matches found.</div>';
+        console.log('Current matches is not an array or empty:', currentMatches);
+        return;
+    }
+
+    try {
+        container.innerHTML = currentMatches.map(match => `
+            <div class="admin-match-card">
+                <div class="match-info">
+                    <span class="match-title">Match ${match ? match.id : '?'}</span>
+                    <span class="match-status-badge ${match && match.completed ? 'completed' : 'pending'}">
+                        ${match && match.completed ? 'Completed' : 'Pending'}
+                    </span>
+                </div>
+                <div class="match-form">
+                    <div class="teams-input-container">
+                        <div class="team-input">
+                            <label class="team-label">${match ? match.homeTeam : 'Home'}</label>
+                            <input type="number" id="homeScore-${match ? match.id : ''}" 
+                                   class="score-input"
+                                   value="${match && match.homeScore !== null ? match.homeScore : ''}" 
+                                   placeholder="0" min="0">
+                        </div>
+                        <div class="vs-divider">VS</div>
+                        <div class="team-input">
+                            <label class="team-label">${match ? match.awayTeam : 'Away'}</label>
+                            <input type="number" id="awayScore-${match ? match.id : ''}" 
+                                   class="score-input"
+                                   value="${match && match.awayScore !== null ? match.awayScore : ''}" 
+                                   placeholder="0" min="0">
+                        </div>
                     </div>
-                    <div class="vs-divider">VS</div>
-                    <div class="team-input">
-                        <label class="team-label">${match.awayTeam}</label>
-                        <input type="number" id="awayScore-${match.id}" 
-                               class="score-input"
-                               value="${match.awayScore !== null ? match.awayScore : ''}" 
-                               placeholder="0" min="0">
+                    <div class="action-buttons">
+                        <button onclick="updateMatchScore(${match ? match.id : ''})" class="btn btn-primary">
+                            Update Score
+                        </button>
                     </div>
                 </div>
-                <div class="action-buttons">
-                    <button onclick="updateMatchScore(${match.id})" class="btn btn-primary">
-                        Update Score
-                    </button>
-                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (e) {
+        console.error('Error rendering matches:', e);
+        container.innerHTML = '<div style="color: red; text-align: center;">Error rendering matches. Check console.</div>';
+    }
 }
 
 // 3. Top Scorer Management
