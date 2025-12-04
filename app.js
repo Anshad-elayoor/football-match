@@ -9,33 +9,12 @@ const GROUPS = {
 };
 
 // 2. Data Management
-// 2. Data Management
-function initializeMatches() {
-    const initialMatches = [
-        { id: 1, homeTeam: 'Real Madrid', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
-        { id: 2, homeTeam: 'PSG', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
-        { id: 3, homeTeam: 'Milan', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
-        { id: 4, homeTeam: 'Real Madrid', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
-        { id: 5, homeTeam: 'Milan', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
-        { id: 6, homeTeam: 'Real Madrid', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
-        { id: 7, homeTeam: 'PSG', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
-        { id: 8, homeTeam: 'Milan', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
-        { id: 9, homeTeam: 'PSG', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false }
-    ];
-    localStorage.setItem('matchData', JSON.stringify(initialMatches));
-    return initialMatches;
-}
-
-function getMatches() {
-    const data = localStorage.getItem('matchData');
-    if (!data) return initializeMatches(); // Initialize if no data found
-    return JSON.parse(data);
-}
+// No longer needed: initializeMatches, getMatches (handled by Firebase listeners)
 
 // 3. Standings Calculation Engine
-function calculateGroupStandings(groupName) {
+function calculateGroupStandings(groupName, matches) {
     const teams = GROUPS[groupName];
-    const matches = getMatches();
+    // matches passed as argument instead of calling getMatches()
 
     // Initialize empty standings for the group
     let standings = teams.map(team => ({
@@ -112,8 +91,8 @@ function calculateGroupStandings(groupName) {
 }
 
 // 4. Rendering Logic
-function renderStandingsTable(groupName, elementId) {
-    const data = calculateGroupStandings(groupName);
+function renderStandingsTable(groupName, elementId, matches) {
+    const data = calculateGroupStandings(groupName, matches);
     const tbody = document.getElementById(elementId);
 
     if (!tbody) return;
@@ -147,8 +126,7 @@ function getTeamLogo(teamName) {
     return TEAM_LOGOS[teamName] || `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=random&color=fff&size=64&rounded=true&bold=true`;
 }
 
-function renderMatchList() {
-    const matches = getMatches();
+function renderMatchList(matches) {
     const container = document.getElementById('matchResults');
 
     if (!container) return;
@@ -181,34 +159,31 @@ function renderMatchList() {
     }).join('');
 }
 
-// 5. Main Update Loop
-function refreshAll() {
-    renderStandingsTable('A', 'groupAStandings');
-    renderStandingsTable('B', 'groupBStandings');
-    renderMatchList();
-    renderTopScorers(); // Add this
+// 5. Main Update Loop - REPLACED WITH FIREBASE LISTENERS
+function startFirebaseListeners() {
+    // Listen for Matches
+    db.ref('matches').on('value', (snapshot) => {
+        const matches = snapshot.val() || [];
+        renderStandingsTable('A', 'groupAStandings', matches);
+        renderStandingsTable('B', 'groupBStandings', matches);
+        renderMatchList(matches);
+    });
+
+    // Listen for Top Scorers
+    db.ref('scorers').on('value', (snapshot) => {
+        const scorers = snapshot.val() || [];
+        renderTopScorers(scorers);
+    });
 }
 
 // 6. Initialization & Events
-document.addEventListener('DOMContentLoaded', refreshAll);
-
-// Auto-refresh every 5 seconds to ensure updates without blinking
-setInterval(refreshAll, 5000);
-
-// Listen for cross-tab updates
-window.addEventListener('storage', refreshAll);
+document.addEventListener('DOMContentLoaded', startFirebaseListeners);
 
 // ==========================================
 // Top Scorer Logic
 // ==========================================
 
-function getScorers() {
-    const data = localStorage.getItem('scorerData');
-    return data ? JSON.parse(data) : [];
-}
-
-function renderTopScorers() {
-    const scorers = getScorers();
+function renderTopScorers(scorers) {
     const container = document.getElementById('topScorersList');
 
     if (!container) return;

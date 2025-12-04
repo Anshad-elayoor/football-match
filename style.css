@@ -184,7 +184,7 @@ header h1 {
 
 .matches-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
 }
 
@@ -447,11 +447,12 @@ footer {
         height: 200px;
     }
 }
+
 .team-logo {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     margin-bottom: 0.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
