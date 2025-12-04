@@ -134,6 +134,12 @@ function renderStandingsTable(groupName, elementId) {
     `).join('');
 }
 
+function getTeamLogo(teamName) {
+    // Generate a placeholder logo using UI Avatars
+    const encodedName = encodeURIComponent(teamName);
+    return `https://ui-avatars.com/api/?name=${encodedName}&background=random&color=fff&size=64&rounded=true&bold=true`;
+}
+
 function renderMatchList() {
     const matches = getMatches();
     const container = document.getElementById('matchResults');
@@ -152,11 +158,13 @@ function renderMatchList() {
                 </div>
                 <div class="match-teams">
                     <div class="team-info">
+                        <img src="${getTeamLogo(match.homeTeam)}" alt="${match.homeTeam}" class="team-logo">
                         <div class="team-name">${match.homeTeam}</div>
                         <div class="team-score">${isDone ? match.homeScore : '-'}</div>
                     </div>
                     <div class="vs">VS</div>
                     <div class="team-info">
+                        <img src="${getTeamLogo(match.awayTeam)}" alt="${match.awayTeam}" class="team-logo">
                         <div class="team-name">${match.awayTeam}</div>
                         <div class="team-score">${isDone ? match.awayScore : '-'}</div>
                     </div>
