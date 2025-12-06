@@ -456,3 +456,135 @@ footer {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
+/* ==========================================
+   KNOCKOUT STAGE STYLES (Public Display)
+   ========================================== */
+
+.knockout-section {
+    margin-top: 3rem;
+}
+
+.knockout-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+}
+
+.knockout-results-container {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.knockout-result-card {
+    background: linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.knockout-result-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+}
+
+.knockout-result-card.final-match {
+    border: 3px solid #FFD700;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1));
+}
+
+.knockout-match-label {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #FFD700;
+    margin-bottom: 1rem;
+}
+
+.knockout-match-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.knockout-team-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.knockout-team-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.knockout-team-name {
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.knockout-tbd {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+}
+
+.knockout-score-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.knockout-score-display .score {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #FFD700;
+}
+
+.knockout-score-display .score-dash {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.knockout-score-display .vs {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+}
+
+.knockout-status.completed {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 5px 15px;
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .knockout-match-content {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .knockout-score-display {
+        order: 2;
+    }
+}
+.knockout-status.upcoming {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+}

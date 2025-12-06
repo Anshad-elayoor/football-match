@@ -402,3 +402,220 @@ footer {
         padding: 1rem;
     }
 }
+/* ==========================================
+   KNOCKOUT STAGE STYLES
+   ========================================== */
+
+.knockout-section {
+    margin-top: 3rem;
+}
+
+.knockout-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.knockout-matches-container {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.knockout-match-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.knockout-match-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+}
+
+.knockout-match-card.final-card {
+    border: 2px solid #FFD700;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+}
+
+.knockout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.knockout-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #FFD700;
+}
+
+.knockout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.knockout-teams-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.knockout-team-select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 140px;
+}
+
+.team-logo-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    overflow: hidden;
+}
+
+.team-logo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 5px;
+}
+
+.team-logo-preview span {
+    font-size: 1.5rem;
+    color: #666;
+}
+
+.team-dropdown {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.team-dropdown:hover,
+.team-dropdown:focus {
+    border-color: #FFD700;
+    outline: none;
+}
+
+.knockout-score-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.knockout-score-inputs .score-input {
+    width: 60px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.vs-text {
+    color: #FFD700;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+    .knockout-teams-container {
+        flex-direction: column;
+    }
+
+    .knockout-score-inputs {
+        order: 2;
+        margin-top: 1rem;
+    }
+
+    .knockout-team-select:nth-child(3) {
+        order: 3;
+    }
+}
+/* Fix Match Button Styles */
+.btn-fix {
+    background: linear-gradient(135deg, #FF6B35, #F7931E) !important;
+    border: none !important;
+    padding: 12px 25px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-fix:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+}
+
+.action-hint {
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.match-completed-info {
+    color: #4CAF50;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.knockout-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+/* Status badge variants */
+.match-status-badge.not-fixed {
+    background: rgba(128, 128, 128, 0.2);
+    color: #888;
+}
+
+.match-status-badge.fixed {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+}
+
+.match-status-badge.completed {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+}

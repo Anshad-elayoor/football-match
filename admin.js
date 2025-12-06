@@ -21,25 +21,46 @@ function initializeAdmin() {
             console.log('No matches found in Firebase. Seeding initial data...');
             // Seed initial data if empty
             const initialMatches = [
-                { id: 1, homeTeam: 'Real Madrid', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
-                { id: 2, homeTeam: 'PSG', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
-                { id: 3, homeTeam: 'Milan', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
-                { id: 4, homeTeam: 'Real Madrid', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
-                { id: 5, homeTeam: 'Milan', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
-                { id: 6, homeTeam: 'Real Madrid', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
-                { id: 7, homeTeam: 'PSG', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
-                { id: 8, homeTeam: 'Milan', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
-                { id: 9, homeTeam: 'PSG', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false }
+                // Group Stage Matches
+                { id: 1, type: 'group', homeTeam: 'Real Madrid', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
+                { id: 2, type: 'group', homeTeam: 'PSG', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
+                { id: 3, type: 'group', homeTeam: 'Milan', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
+                { id: 4, type: 'group', homeTeam: 'Real Madrid', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
+                { id: 5, type: 'group', homeTeam: 'Milan', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
+                { id: 6, type: 'group', homeTeam: 'Real Madrid', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
+                { id: 7, type: 'group', homeTeam: 'PSG', awayTeam: 'Man. City', homeScore: null, awayScore: null, completed: false },
+                { id: 8, type: 'group', homeTeam: 'Milan', awayTeam: 'Barcelona', homeScore: null, awayScore: null, completed: false },
+                { id: 9, type: 'group', homeTeam: 'PSG', awayTeam: 'Chelsea', homeScore: null, awayScore: null, completed: false },
+                // Knockout Stage Matches
+                { id: 10, type: 'semifinal', label: 'Semi Final 1', homeTeam: null, awayTeam: null, homeScore: null, awayScore: null, completed: false },
+                { id: 11, type: 'semifinal', label: 'Semi Final 2', homeTeam: null, awayTeam: null, homeScore: null, awayScore: null, completed: false },
+                { id: 12, type: 'final', label: 'Final', homeTeam: null, awayTeam: null, homeScore: null, awayScore: null, completed: false }
             ];
             db.ref('matches').set(initialMatches)
                 .then(() => console.log('Seeding complete.'))
                 .catch(e => console.error('Seeding failed:', e));
 
             currentMatches = initialMatches;
+        } else if (Array.isArray(currentMatches)) {
+            // Check if knockout matches exist, if not add them
+            const hasKnockout = currentMatches.some(m => m && (m.type === 'semifinal' || m.type === 'final'));
+            if (!hasKnockout) {
+                console.log('Adding knockout matches to existing data...');
+                const knockoutMatches = [
+                    { id: 10, type: 'semifinal', label: 'Semi Final 1', homeTeam: null, awayTeam: null, homeScore: null, awayScore: null, completed: false },
+                    { id: 11, type: 'semifinal', label: 'Semi Final 2', homeTeam: null, awayTeam: null, homeScore: null, awayScore: null, completed: false },
+                    { id: 12, type: 'final', label: 'Final', homeTeam: null, awayTeam: null, homeScore: null, awayScore: null, completed: false }
+                ];
+                currentMatches = [...currentMatches, ...knockoutMatches];
+                db.ref('matches').set(currentMatches)
+                    .then(() => console.log('Knockout matches added.'))
+                    .catch(e => console.error('Failed to add knockout matches:', e));
+            }
         }
 
         console.log('Rendering matches with:', currentMatches);
         renderAdminMatches();
+        renderKnockoutMatches();
     });
 
     // Listen for Scorers
@@ -159,6 +180,242 @@ function renderAdminMatches() {
         console.error('Error rendering matches:', e);
         container.innerHTML = '<div style="color: red; text-align: center;">Error rendering matches. Check console.</div>';
     }
+}
+
+// Team logos mapping (using SVG files)
+const teamLogos = {
+    'Real Madrid': 'images/real_madrid.svg',
+    'PSG': 'images/psg.svg',
+    'Milan': 'images/milan.svg',
+    'Man. City': 'images/man_city.svg',
+    'Barcelona': 'images/barcelona.svg',
+    'Chelsea': 'images/chelsea.svg'
+};
+
+// All teams for knockout stage dropdowns
+const allTeams = ['Real Madrid', 'PSG', 'Milan', 'Man. City', 'Barcelona', 'Chelsea'];
+
+// Render Knockout Stage Matches (Semi Finals & Final)
+function renderKnockoutMatches() {
+    const container = document.getElementById('knockoutMatches');
+    if (!container) return;
+
+    if (!currentMatches || !Array.isArray(currentMatches)) {
+        container.innerHTML = '<div style="color: white; text-align: center;">Loading knockout matches...</div>';
+        return;
+    }
+
+    // Filter only knockout matches (type: semifinal or final)
+    const knockoutMatches = currentMatches.filter(m => m && (m.type === 'semifinal' || m.type === 'final'));
+
+    if (knockoutMatches.length === 0) {
+        container.innerHTML = '<div style="color: white; text-align: center;">No knockout matches configured.</div>';
+        return;
+    }
+
+    try {
+        container.innerHTML = knockoutMatches.map(match => {
+            // Determine match status: not_fixed -> fixed (upcoming) -> completed
+            const isFixed = match.fixed === true;
+            const isCompleted = match.completed === true;
+            let statusClass = 'not-fixed';
+            let statusText = 'Not Fixed';
+
+            if (isCompleted) {
+                statusClass = 'completed';
+                statusText = 'Completed';
+            } else if (isFixed) {
+                statusClass = 'fixed';
+                statusText = 'Upcoming';
+            }
+
+            return `
+            <div class="knockout-match-card ${match.type === 'final' ? 'final-card' : ''}">
+                <div class="knockout-header">
+                    <span class="knockout-title">${match.label || 'Knockout Match'}</span>
+                    <span class="match-status-badge ${statusClass}">
+                        ${statusText}
+                    </span>
+                </div>
+                <div class="knockout-form">
+                    <div class="knockout-teams-container">
+                        <div class="knockout-team-select">
+                            <div class="team-logo-preview" id="homeLogo-${match.id}">
+                                ${match.homeTeam ? `<img src="${teamLogos[match.homeTeam] || ''}" alt="${match.homeTeam}" onerror="this.style.display='none'">` : '<span>?</span>'}
+                            </div>
+                            <select id="homeTeam-${match.id}" class="team-dropdown" onchange="updateTeamLogo(${match.id}, 'home')">
+                                <option value="">Select Team</option>
+                                ${allTeams.map(team => `<option value="${team}" ${match.homeTeam === team ? 'selected' : ''}>${team}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="knockout-score-inputs">
+                            <input type="number" id="knockoutHomeScore-${match.id}" 
+                                   class="score-input"
+                                   value="${match.homeScore !== null ? match.homeScore : ''}" 
+                                   placeholder="0" min="0">
+                            <span class="vs-text">VS</span>
+                            <input type="number" id="knockoutAwayScore-${match.id}" 
+                                   class="score-input"
+                                   value="${match.awayScore !== null ? match.awayScore : ''}" 
+                                   placeholder="0" min="0">
+                        </div>
+                        <div class="knockout-team-select">
+                            <div class="team-logo-preview" id="awayLogo-${match.id}">
+                                ${match.awayTeam ? `<img src="${teamLogos[match.awayTeam] || ''}" alt="${match.awayTeam}" onerror="this.style.display='none'">` : '<span>?</span>'}
+                            </div>
+                            <select id="awayTeam-${match.id}" class="team-dropdown" onchange="updateTeamLogo(${match.id}, 'away')">
+                                <option value="">Select Team</option>
+                                ${allTeams.map(team => `<option value="${team}" ${match.awayTeam === team ? 'selected' : ''}>${team}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="knockout-actions">
+                        ${!isFixed && !isCompleted ? `
+                            <button onclick="fixKnockoutMatch(${match.id})" class="btn btn-fix">
+                                📌 Fix Match
+                            </button>
+                            <p class="action-hint">Select both teams and click "Fix Match" to make it visible to users</p>
+                        ` : ''}
+                        ${isFixed && !isCompleted ? `
+                            <div class="completed-checkbox-container">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="knockoutCompleted-${match.id}" 
+                                           class="completed-checkbox" ${isCompleted ? 'checked' : ''}>
+                                    <span>Mark as Completed</span>
+                                </label>
+                            </div>
+                            <button onclick="updateKnockoutMatch(${match.id})" class="btn btn-primary">
+                                Update Match
+                            </button>
+                        ` : ''}
+                        ${isCompleted ? `
+                            <div class="match-completed-info">
+                                ✅ Match has been completed
+                            </div>
+                            <button onclick="editKnockoutMatch(${match.id})" class="btn btn-secondary">
+                                Edit Match
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        }).join('');
+    } catch (e) {
+        console.error('Error rendering knockout matches:', e);
+        container.innerHTML = '<div style="color: red; text-align: center;">Error rendering knockout matches.</div>';
+    }
+}
+
+// Update team logo preview when dropdown changes
+function updateTeamLogo(matchId, side) {
+    const dropdown = document.getElementById(`${side}Team-${matchId}`);
+    const logoContainer = document.getElementById(`${side}Logo-${matchId}`);
+
+    if (!dropdown || !logoContainer) return;
+
+    const selectedTeam = dropdown.value;
+    if (selectedTeam && teamLogos[selectedTeam]) {
+        logoContainer.innerHTML = `<img src="${teamLogos[selectedTeam]}" alt="${selectedTeam}" onerror="this.style.display='none'">`;
+    } else {
+        logoContainer.innerHTML = '<span>?</span>';
+    }
+}
+
+// Update Knockout Match (Semi Final or Final)
+function updateKnockoutMatch(id) {
+    const matchIndex = currentMatches.findIndex(m => m.id === id);
+    if (matchIndex === -1) return;
+
+    const homeTeamSelect = document.getElementById(`homeTeam-${id}`);
+    const awayTeamSelect = document.getElementById(`awayTeam-${id}`);
+    const homeScoreInput = document.getElementById(`knockoutHomeScore-${id}`);
+    const awayScoreInput = document.getElementById(`knockoutAwayScore-${id}`);
+    const completedCheckbox = document.getElementById(`knockoutCompleted-${id}`);
+
+    const homeTeam = homeTeamSelect.value || null;
+    const awayTeam = awayTeamSelect.value || null;
+    const homeScore = homeScoreInput.value !== '' ? parseInt(homeScoreInput.value) : null;
+    const awayScore = awayScoreInput.value !== '' ? parseInt(awayScoreInput.value) : null;
+    const isCompleted = completedCheckbox.checked;
+
+    // Update match data
+    currentMatches[matchIndex].homeTeam = homeTeam;
+    currentMatches[matchIndex].awayTeam = awayTeam;
+    currentMatches[matchIndex].homeScore = homeScore;
+    currentMatches[matchIndex].awayScore = awayScore;
+    currentMatches[matchIndex].completed = isCompleted;
+
+    // Save to Firebase
+    db.ref('matches').set(currentMatches)
+        .then(() => {
+            const btn = document.querySelector(`button[onclick="updateKnockoutMatch(${id})"]`);
+            if (btn) {
+                const originalText = btn.innerText;
+                btn.innerText = 'Match Updated!';
+                btn.style.background = '#4CAF50';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }
+        })
+        .catch(error => alert('Error updating match: ' + error.message));
+}
+
+// Fix Knockout Match - makes it visible to users as "Upcoming"
+function fixKnockoutMatch(id) {
+    const matchIndex = currentMatches.findIndex(m => m.id === id);
+    if (matchIndex === -1) return;
+
+    const homeTeamSelect = document.getElementById(`homeTeam-${id}`);
+    const awayTeamSelect = document.getElementById(`awayTeam-${id}`);
+
+    const homeTeam = homeTeamSelect.value;
+    const awayTeam = awayTeamSelect.value;
+
+    // Validate both teams are selected
+    if (!homeTeam || !awayTeam) {
+        alert('Please select both teams before fixing the match');
+        return;
+    }
+
+    if (homeTeam === awayTeam) {
+        alert('Please select two different teams');
+        return;
+    }
+
+    // Update match data
+    currentMatches[matchIndex].homeTeam = homeTeam;
+    currentMatches[matchIndex].awayTeam = awayTeam;
+    currentMatches[matchIndex].fixed = true;
+    currentMatches[matchIndex].completed = false;
+
+    // Save to Firebase
+    db.ref('matches').set(currentMatches)
+        .then(() => {
+            const btn = document.querySelector(`button[onclick="fixKnockoutMatch(${id})"]`);
+            if (btn) {
+                btn.innerText = 'Match Fixed!';
+                btn.style.background = '#4CAF50';
+                setTimeout(() => renderKnockoutMatches(), 1500);
+            }
+        })
+        .catch(error => alert('Error fixing match: ' + error.message));
+}
+
+// Edit Knockout Match - allows editing a completed match
+function editKnockoutMatch(id) {
+    const matchIndex = currentMatches.findIndex(m => m.id === id);
+    if (matchIndex === -1) return;
+
+    // Revert to fixed (upcoming) status so admin can edit
+    currentMatches[matchIndex].completed = false;
+
+    // Save to Firebase - this will trigger re-render with edit UI
+    db.ref('matches').set(currentMatches)
+        .then(() => console.log('Match reopened for editing'))
+        .catch(error => alert('Error reopening match: ' + error.message));
 }
 
 // 3. Top Scorer Management

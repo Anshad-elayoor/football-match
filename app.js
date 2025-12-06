@@ -167,6 +167,7 @@ function startFirebaseListeners() {
         renderStandingsTable('A', 'groupAStandings', matches);
         renderStandingsTable('B', 'groupBStandings', matches);
         renderMatchList(matches);
+        renderKnockoutResults(matches);
     });
 
     // Listen for Top Scorers
@@ -211,4 +212,72 @@ function renderTopScorers(scorers) {
             </div>
         </div>
     `).join('');
+}
+
+// ==========================================
+// Knockout Stage Logic (Public Display)
+// ==========================================
+
+const KNOCKOUT_TEAM_LOGOS = {
+    'Real Madrid': 'images/real_madrid.svg',
+    'PSG': 'images/psg.svg',
+    'Milan': 'images/milan.svg',
+    'Man. City': 'images/man_city.svg',
+    'Barcelona': 'images/barcelona.svg',
+    'Chelsea': 'images/chelsea.svg'
+};
+
+function renderKnockoutResults(matches) {
+    const container = document.getElementById('knockoutResults');
+    if (!container) return;
+
+    // Filter knockout matches that are FIXED (visible to users)
+    const knockoutMatches = matches.filter(m => m && (m.type === 'semifinal' || m.type === 'final') && m.fixed === true);
+
+    if (knockoutMatches.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">Knockout matches will appear here once scheduled</div>';
+        return;
+    }
+
+    container.innerHTML = knockoutMatches.map(match => {
+        const hasTeams = match.homeTeam && match.awayTeam;
+        const hasScores = match.homeScore !== null && match.awayScore !== null;
+        const isCompleted = match.completed === true;
+
+        // Determine status text
+        let statusClass = 'upcoming';
+        let statusText = 'Upcoming';
+        if (isCompleted) {
+            statusClass = 'completed';
+            statusText = 'Completed';
+        }
+
+        return `
+            <div class="knockout-result-card ${match.type === 'final' ? 'final-match' : ''}">
+                <div class="knockout-match-label">${match.label || 'Knockout Match'}</div>
+                <div class="knockout-match-content">
+                    <div class="knockout-team-display">
+                        ${match.homeTeam ? `
+                            <img src="${KNOCKOUT_TEAM_LOGOS[match.homeTeam] || ''}" alt="${match.homeTeam}" class="knockout-team-logo" onerror="this.style.display='none'">
+                            <span class="knockout-team-name">${match.homeTeam}</span>
+                        ` : '<span class="knockout-tbd">TBD</span>'}
+                    </div>
+                    <div class="knockout-score-display">
+                        ${hasTeams && hasScores ? `
+                            <span class="score">${match.homeScore}</span>
+                            <span class="score-dash">-</span>
+                            <span class="score">${match.awayScore}</span>
+                        ` : '<span class="vs">VS</span>'}
+                    </div>
+                    <div class="knockout-team-display">
+                        ${match.awayTeam ? `
+                            <img src="${KNOCKOUT_TEAM_LOGOS[match.awayTeam] || ''}" alt="${match.awayTeam}" class="knockout-team-logo" onerror="this.style.display='none'">
+                            <span class="knockout-team-name">${match.awayTeam}</span>
+                        ` : '<span class="knockout-tbd">TBD</span>'}
+                    </div>
+                </div>
+                <div class="knockout-status ${statusClass}">${statusText}</div>
+            </div>
+        `;
+    }).join('');
 }

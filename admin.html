@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Match Management</title>
     <meta name="description" content="Admin panel for managing football tournament match results">
-    <link rel="stylesheet" href="admin.css?v=1.4">
+    <link rel="stylesheet" href="admin.css?v=1.5">
 </head>
 
 <body>
@@ -86,6 +86,16 @@
                     <!-- Populated by JavaScript -->
                 </div>
             </section>
+
+            <!-- Knockout Stage Section -->
+            <section class="knockout-section">
+                <h2>🏆 Knockout Stage</h2>
+                <p style="color: #aaa; margin-bottom: 20px;">Select teams from the dropdown and enter scores for Semi
+                    Finals and Final.</p>
+                <div id="knockoutMatches" class="knockout-matches-container">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
         </main>
 
         <footer>
@@ -95,8 +105,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="firebase-config.js?v=1.4"></script>
-    <script src="admin.js?v=1.4"></script>
+    <script src="firebase-config.js?v=1.5"></script>
+    <script src="admin.js?v=1.5"></script>
 </body>
 
 </html>
